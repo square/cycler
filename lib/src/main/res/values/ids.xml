@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--
+  This ID is applied to every RecyclerView when using the DSL to create one. This allows
+  view state restoration to work and makes finding the view in instrumentation tests easier.
+  -->
+  <item type="id" name="recyclerView"/>
+  <item type="id" name="recycler_adopted"/>
+</resources>

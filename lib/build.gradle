@@ -1,0 +1,22 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply from: rootProject.file('.buildscript/configure-maven-publish.gradle')
+
+android {
+  compileSdkVersion 29
+
+  defaultConfig {
+    minSdkVersion 21
+  }
+
+}
+
+dependencies {
+  api deps.recyclerview
+
+  implementation deps.kotlin_stdlib
+  implementation deps.coroutines_android
+  implementation deps.coroutines_core
+
+  testImplementation deps.truth
+}
