@@ -32,7 +32,7 @@ have a layout which the recycler view is part of.
 **Examples:**
 
 ```kotlin
-val recycler = Recycler.create<ItemType>(context) {
+val recycler = Recycler.create<ItemType>(context, id = R.id.myrecycler) {
   ...
 }
 ```
