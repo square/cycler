@@ -567,16 +567,22 @@ class Recycler<I : Any> internal constructor(
   companion object {
     /**
      * Factory method to create a Recycler.
-     * The [block] is a lambda on [Recycler.Config] specifying all row types
-     * and extra options.
+     * The [block] is a lambda on
+     * @param context context to create the [RecyclerView].
+     * @param id id for the [RecyclerView]. Defaults to [View.NO_ID].
+     * @param layoutProvider lambda generating a [RecyclerView.LayoutManager] for the view. If not
+     * provided a [LinearLayoutManager] will be provided.
+     * @param block this is the lambda on [Recycler.Config] specifying all the content configuration.
+     *
      */
     inline fun <I : Any> create(
       context: Context,
+      id: Int = View.NO_ID,
       layoutProvider: (Context) -> LayoutManager = { LinearLayoutManager(it) },
       crossinline block: Config<I>.() -> Unit
     ): Recycler<I> {
       val view = RecyclerView(context)
-      view.id = R.id.recyclerView
+      view.id = id
       view.layoutManager = layoutProvider(context)
       return adopt(view, block)
     }
@@ -591,10 +597,6 @@ class Recycler<I : Any> internal constructor(
       crossinline block: Config<I>.() -> Unit
     ): Recycler<I> {
       requireNotNull(view.layoutManager) { "RecyclerView needs a layoutManager assigned." }
-      // Check this recycler wasn't adopted before.
-      require(view.getTag(R.id.recycler_adopted) == null) { "RecyclerView is already adopted." }
-      view.setTag(R.id.recycler_adopted, true)
-
       return Config<I>()
           .apply(block)
           .setUp(view)
