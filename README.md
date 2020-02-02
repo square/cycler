@@ -24,9 +24,8 @@ in a **succinct way**.
 The configuring block is the essence of the recycler view.
 It contains all the row definitions and how to bind data.
 
-You can ask the API to create the RecyclerView object for you
-–using the `create` method– or configuring an existing instance
-–through the `adopt` method. The later is useful if you already
+You can ask the API to create the RecyclerView object for you – using the `create` method – or 
+configure an existing instance – through the `adopt` method. The latter is useful if you already
 have a layout which the recycler view is part of.
 
 **Examples:**
@@ -107,22 +106,22 @@ row<I, S, V> {
 }
 ```
 
-This is the general case. Instead of inflating a layout create
+This is the general case. Instead of inflating a layout, `create`
 provides a context for you to create a view of type `V` and assign
-it to `view`. As usual you can use that `view` reference or any
-other you obtain inside the `bind` block.
+it to `view`. As usual, you can use that `view` reference or any
+other reference you've obtained inside the `bind` block.
 
 #### Extra item definitions
 
 Recycler views allow for the inclusion of one extra (but optional)
 item. This is useful when you want to show your state.
 For example: "no results" or "loading more...".
-The extraItem is independent from the main data list and
+The `extraItem` is independent from the main data list and
 doesn't need to be of type `I`.
 
-Definitions for extraItems are analogous to normal rows
-and follow the same convention. But are only applied to the
-extra item you provide along with the data (if any).
+Definitions for `extraItem`s are analogous to normal rows
+and follow the same convention. However, the definitions are only applied 
+to the extra item you provide along with the data (if any).
 
 ```kotlin
 extraItem<I, S, V> {
@@ -135,12 +134,12 @@ extraItem<I, S, V> {
 }
 ```
 
-Notice that you can define several different extraItem
+Notice that you can define several different `extraItem`
 blocks, with the same or different sub-types `S` and
 optional `forItemWhere`.
 
 `bind` is also provided in case your extra item has data.
-Imagine you are filtering by fruit. If you selected "apples"
+Imagine you are filtering by fruit. If you've selected "apples"
 you want to show "No more apples" instead of "No more fruits".
 That can be achieved with an extra item of type
 `NoMore(val fruitName: String)`.
@@ -155,7 +154,7 @@ These extensions will be configured in the same way,
 through a definition block.
 
 Extensions might offer special configuration for certain
-types of row. For example, edges can define a default
+types of rows. For example, edges can define a default
 edge configuration, but use different values for the rows
 of type `Banana`. In that case the `row<Banana>` definition
 will include its special configuration.
