@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from: rootProject.file('.buildscript/configure-maven-publish.gradle')
+apply from: rootProject.file('.buildscript/publish.gradle')
 
 android {
   compileSdkVersion 29
@@ -20,3 +20,10 @@ dependencies {
 
   testImplementation deps.truth
 }
+
+mavenPublishAs(
+    groupId: 'com.squareup.cycler',
+    artifactId: 'cycler',
+    version: '0.1.2',
+    isSnapshot: true
+)
