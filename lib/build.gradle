@@ -25,5 +25,5 @@ mavenPublishAs(
     groupId: 'com.squareup.cycler',
     artifactId: 'cycler',
     version: '0.1.2',
-    isSnapshot: true
+    isSnapshot: false 
 )
