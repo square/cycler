@@ -41,7 +41,7 @@ class MutationsPage : Page {
           ).show()
         }
 
-        onSwipeToRemove {
+        onSwiped { it ->
           Toast.makeText(
               recyclerView.context,
               "Swiped ${it.name} away",
