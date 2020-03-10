@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="Theme.SampleApp" parent="Theme.AppCompat.DayNight">
+    <item name="android:textViewStyle">@style/TextView</item>
+    <item name="android:checkboxStyle">@style/CheckBox</item>
+  </style>
+
+  <style name="TextView">
+    <item name="android:textAppearance">@style/TextAppearance</item>
+  </style>
+
+  <style name="CheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+    <item name="android:textAppearance">@style/TextAppearance.Bold</item>
+    <item name="android:textColor">#468</item>
+  </style>
+
+  <style name="LineContainer">
+    <item name="android:padding">16dp</item>
+  </style>
+
+  <style name="TextAppearance">
+    <item name="android:textSize">20sp</item>
+    <item name="android:textColor">#468</item>
+  </style>
+
+  <style name="TextAppearance.Bold">
+    <item name="android:textStyle">bold</item>
+  </style>
+</resources>

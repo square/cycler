@@ -1,3 +1,4 @@
 rootProject.name = 'cycler'
 
 include ':lib'
+include ':sample-app'

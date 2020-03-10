@@ -10,6 +10,7 @@ buildscript {
   }
 
   ext.deps = [
+    app_compat: 'androidx.appcompat:appcompat:1.1.0',
     coroutines_android: "org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines_version}",
     coroutines_core: "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}",
     kotlin_stdlib: "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}",
@@ -19,7 +20,7 @@ buildscript {
   ]
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.3'
+    classpath 'com.android.tools.build:gradle:3.6.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath deps.maven_publish
   }
