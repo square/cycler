@@ -268,10 +268,11 @@ private class MutationExtension<T : Any>(val spec: MutationExtensionSpec<T>) : E
       }
 
       val position = viewHolder.adapterPosition
+      val dataItem = data.data[position]
       data.remove(position)
       recycler.view.adapter!!.notifyItemRemoved(position)
       // Tell the callback.
-      spec.onSwipeToRemove?.invoke(data.data[position])
+      spec.onSwipeToRemove?.invoke(dataItem)
     }
   }
 }
