@@ -149,7 +149,8 @@ private class MutationExtension<T : Any>(val spec: MutationExtensionSpec<T>) : E
         // If the data has been frozen (undergoing update) we cannot swap / drag anymore!
         return makeMovementFlags(0, 0)
       }
-      val dragFlags = if (spec.dragAndDropEnabled) {
+      val moreThanOne = data.data.size > 1
+      val dragFlags = if (spec.dragAndDropEnabled && moreThanOne) {
         data.forPosition(
             viewHolder.adapterPosition,
             onDataItem = { ItemTouchHelper.UP or ItemTouchHelper.DOWN },
