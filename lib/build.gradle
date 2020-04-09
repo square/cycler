@@ -28,6 +28,6 @@ dependencies {
 mavenPublishAs(
     groupId: 'com.squareup.cycler',
     artifactId: 'cycler',
-    version: '0.1.4',
-    isSnapshot: false
+    version: '0.1.5',
+    isSnapshot: true
 )
