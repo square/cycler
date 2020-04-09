@@ -6,14 +6,23 @@
     android:layout_height="match_parent"
     >
 
-  <CheckBox
-      android:id="@+id/show_total"
+  <Spinner
+      android:id="@+id/page_selection"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:text="Show total"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <LinearLayout
+      android:id="@+id/options"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/page_selection"
       />
 
   <androidx.recyclerview.widget.RecyclerView
@@ -22,7 +31,7 @@
       android:layout_height="0dp"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/show_total"
+      app:layout_constraintTop_toBottomOf="@+id/options"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
       />
