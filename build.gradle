@@ -13,9 +13,13 @@ buildscript {
     app_compat: 'androidx.appcompat:appcompat:1.1.0',
     coroutines_android: "org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines_version}",
     coroutines_core: "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}",
+    junit: 'junit:junit:4.13',
     kotlin_stdlib: "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}",
     maven_publish: "com.vanniktech:gradle-maven-publish-plugin:0.8.0",
+    mockito: 'org.mockito:mockito-core:2.28.2',
+    mockito_kotlin: 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0',
     recyclerview: 'androidx.recyclerview:recyclerview:1.1.0',
+    robolectric: 'org.robolectric:robolectric:4.3',
     truth: 'com.google.truth:truth:1.0',
   ]
 

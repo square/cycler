@@ -18,7 +18,11 @@ dependencies {
   implementation deps.coroutines_android
   implementation deps.coroutines_core
 
+  testImplementation deps.junit
+  testImplementation deps.mockito
+  testImplementation deps.mockito_kotlin
   testImplementation deps.truth
+  testImplementation deps.robolectric
 }
 
 mavenPublishAs(
