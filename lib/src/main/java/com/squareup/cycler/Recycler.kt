@@ -440,11 +440,18 @@ class Recycler<I : Any> internal constructor(
           position,
           onDataItem = { dataItem ->
             val rowSpecIndex = config.rowSpecs.indexOfFirst { it.matches(dataItem) }
+            require (rowSpecIndex >= 0) {
+              "Data item type not found. Check row definitions. Item: $dataItem"
+            }
             val subType = config.rowSpecs[rowSpecIndex].subType(position, dataItem)
-            return makeViewType(rowSpecIndex, subType)
+            makeViewType(rowSpecIndex, subType)
           },
           onExtraItem = { extraItem ->
-            -(1 + config.extraItemSpecs.indexOfFirst { it.matches(extraItem) })
+            val extraRowSpecIndex = config.extraItemSpecs.indexOfFirst { it.matches(extraItem) }
+            require (extraRowSpecIndex >= 0) {
+              "Extra item type not found. Check extra row definitions. Item: $extraItem"
+            }
+            -(1 + extraRowSpecIndex)
           },
           orElse = {
             throw IllegalStateException(
