@@ -230,8 +230,7 @@ internal constructor(
   private val allowedDirections: Set<SwipeDirection>
 ) {
 
-  private val rightToLeft: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-      && swipedView.layoutDirection == View.LAYOUT_DIRECTION_RTL
+  private val rightToLeft: Boolean = swipedView.layoutDirection == View.LAYOUT_DIRECTION_RTL
 
   /**
    * It will tell if the [bind] was called successfully and there's a [direction] and [percentage]
