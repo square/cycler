@@ -578,32 +578,41 @@ class Recycler<I : Any> internal constructor(
      * @param context context to create the [RecyclerView].
      * @param id id for the [RecyclerView]. Defaults to [View.NO_ID].
      * @param layoutProvider lambda generating a [RecyclerView.LayoutManager] for the view. If not
-     * provided a [LinearLayoutManager] will be provided.
+     * provided a [LinearLayoutManager] will be used.
      * @param block this is the lambda on [Recycler.Config] specifying all the content configuration.
      *
      */
     inline fun <I : Any> create(
       context: Context,
       id: Int = View.NO_ID,
-      layoutProvider: (Context) -> LayoutManager = { LinearLayoutManager(it) },
+      noinline layoutProvider: (Context) -> LayoutManager = { LinearLayoutManager(it) },
       crossinline block: Config<I>.() -> Unit
     ): Recycler<I> {
       val view = RecyclerView(context)
       view.id = id
-      view.layoutManager = layoutProvider(context)
-      return adopt(view, block)
+      return adopt(view, layoutProvider, block)
     }
 
     /**
      * Factory method to create a Recycler.
      * The [block] is a lambda on [Recycler.Config] specifying all row types
      * and extra options. Same as [create] but it takes an already existing [RecyclerView].
+     *
+     * @param view the RecyclerView to adopt
+     * @param layoutProvider a lambda that will create the layout manager. If omitted (null)
+     * the RecyclerView needs to have a layout manager already assigned.
+     * @param block a lambda on [Recycler.Config] including the configuration.
      */
     inline fun <I : Any> adopt(
       view: RecyclerView,
+      noinline layoutProvider: ((Context) -> LayoutManager)? = null,
       crossinline block: Config<I>.() -> Unit
     ): Recycler<I> {
-      requireNotNull(view.layoutManager) { "RecyclerView needs a layoutManager assigned." }
+      layoutProvider?.invoke(view.context).let { view.layoutManager = it }
+      requireNotNull(view.layoutManager) {
+        "RecyclerView needs a layoutManager assigned. " +
+        "Assign one to the view, or pass a layoutProvider argument."
+      }
       return Config<I>()
           .apply(block)
           .setUp(view)

@@ -1,8 +1,10 @@
 package com.squareup.cycler
 
+import android.content.Context
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.squareup.cycler.Recycler.Companion.create
 import com.squareup.cycler.Recycler.Config
 
@@ -14,5 +16,6 @@ import com.squareup.cycler.Recycler.Config
  */
 inline fun <I : Any> View.adoptRecyclerById(
   @IdRes recyclerId: Int,
+  noinline layoutProvider: ((Context) -> LayoutManager)? = null,
   crossinline block: Config<I>.() -> Unit
-): Recycler<I> = Recycler.adopt(findViewById(recyclerId), block)
+): Recycler<I> = Recycler.adopt(findViewById(recyclerId), layoutProvider, block)
