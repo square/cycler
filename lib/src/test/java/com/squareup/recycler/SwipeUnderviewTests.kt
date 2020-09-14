@@ -12,10 +12,10 @@ import com.squareup.cycler.SwipeDirection.END
 import com.squareup.cycler.SwipeDirection.LEFT
 import com.squareup.cycler.SwipeDirection.RIGHT
 import com.squareup.cycler.SwipeDirection.START
+import java.util.EnumSet
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.EnumSet
 
 /**
  * Tests the basic algoritms that translate swipe movement into our API values.

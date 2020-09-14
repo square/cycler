@@ -11,7 +11,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 
-class RecyclerActivity: AppCompatActivity(R.layout.main_activity), OnItemSelectedListener {
+class RecyclerActivity : AppCompatActivity(R.layout.main_activity), OnItemSelectedListener {
 
   private val pages = arrayOf(SimplePage, MutationsPage())
 
@@ -53,6 +53,3 @@ class RecyclerActivity: AppCompatActivity(R.layout.main_activity), OnItemSelecte
     }
   }
 }
-
-
-

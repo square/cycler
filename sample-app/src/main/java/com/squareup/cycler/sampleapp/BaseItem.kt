@@ -17,8 +17,10 @@ sealed class BaseItem {
     val id: Int,
     override val amount: Float,
     val isStarred: Boolean = false
-  ): BaseItem() {
-    init { require(amount < 0f) }
+  ) : BaseItem() {
+    init {
+      require(amount < 0f)
+    }
   }
 }
 

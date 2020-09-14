@@ -25,7 +25,10 @@ class RecyclerData<I : Any>(
   var frozen: Boolean = false
     internal set
 
-  fun move(from: Int, to: Int) {
+  fun move(
+    from: Int,
+    to: Int
+  ) {
     ensureNotFrozen()
     mutableData.move(from, to)
   }

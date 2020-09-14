@@ -1,7 +1,6 @@
 package com.squareup.cycler
 
 import android.graphics.Canvas
-import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.MeasureSpec
@@ -30,7 +29,10 @@ fun <I : Any> Recycler.Config<I>.enableMutations(block: MutationExtensionSpec<I>
  * Used in swipe related methods. They can be absolute or text-direction relative ([START]/[END]).
  * The values used will depend on what is returned in [MutationExtensionSpec.canSwipe].
  */
-enum class SwipeDirection(val absolute: Boolean, val platformValue: Int) {
+enum class SwipeDirection(
+  val absolute: Boolean,
+  val platformValue: Int
+) {
   START(false, ItemTouchHelper.START),
   END(false, ItemTouchHelper.END),
   LEFT(true, ItemTouchHelper.LEFT),
@@ -63,6 +65,7 @@ class MutationExtensionSpec<T : Any> : ExtensionSpec<T> {
    * recycler view or not
    */
   var swipeToRemoveEnabled = false
+
   /**
    * Determine whether items can be dragged up or down the recycler view or not
    */
@@ -131,10 +134,10 @@ class MutationExtensionSpec<T : Any> : ExtensionSpec<T> {
   }
 
   @Deprecated(
-    message = "Use the version that specifies which side is allowed.",
-    replaceWith = ReplaceWith(
-      expression = "canSwipe { if (block(it)) SwipeDirection.BOTH else SwipeDirection.NONE }"
-    )
+      message = "Use the version that specifies which side is allowed.",
+      replaceWith = ReplaceWith(
+          expression = "canSwipe { if (block(it)) SwipeDirection.BOTH else SwipeDirection.NONE }"
+      )
   )
   inline fun canSwipeToRemoveItem(crossinline block: (T) -> Boolean) {
     canSwipe { if (block(it)) SwipeDirection.BOTH else SwipeDirection.NONE }
@@ -530,4 +533,6 @@ private fun Set<SwipeDirection>.toPlatformValue() = fold(0) { acc, direction ->
  * That notification only uses values approved by us previously, and those values come from
  * [SwipeDirection]. Therefore, the value *must* be one of them.
  */
-private fun Int.toSwipeDirection() = SwipeDirection.values().first { it.platformValue == this }
+private fun Int.toSwipeDirection() = SwipeDirection.values().first {
+  it.platformValue == this
+}

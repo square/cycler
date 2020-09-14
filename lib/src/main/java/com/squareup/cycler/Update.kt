@@ -3,9 +3,9 @@ package com.squareup.cycler
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.squareup.cycler.Recycler.Config
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
+import kotlinx.coroutines.withContext
 
 /**
  * Holds the info for a call to [update]. This object is mutable to allow the caller to change it
@@ -26,8 +26,7 @@ import kotlin.properties.Delegates
  * - if currentUpdate change we let the other call (the one that changed it) to apply changes.
  * - That call would have got all our changes too as its "currentUpdate" was a copy of ours.
  */
-class Update<I : Any>
-  constructor(private val oldRecyclerData: RecyclerData<I>) {
+class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
 
   init {
     // Nobody will change oldRecyclerData anymore.
@@ -102,7 +101,9 @@ class Update<I : Any>
         dataAdded -> {
           notifications += { adapter ->
             val positionAt = oldRecyclerData.data.size
-            val count = addedChunks.asSequence().map(List<I>::size).sum()
+            val count = addedChunks.asSequence()
+                .map(List<I>::size)
+                .sum()
             adapter.notifyItemRangeInserted(positionAt, count)
           }
         }
@@ -120,11 +121,8 @@ class Update<I : Any>
   private fun calculateDataChanges(
     itemComparator: ItemComparator<I>
   ): (Adapter<*>) -> Unit {
-    val callback = DataSourceDiff(
-        itemComparator, oldRecyclerData.data, newData
-    )
-    val diffResult =
-      DiffUtil.calculateDiff(callback)
+    val callback = DataSourceDiff(itemComparator, oldRecyclerData.data, newData)
+    val diffResult = DiffUtil.calculateDiff(callback)
     return { adapter -> diffResult.dispatchUpdatesTo(adapter) }
   }
 
