@@ -105,8 +105,7 @@ class Recycler<I : Any> internal constructor(
   val view: RecyclerView,
   private val config: Config<I>
 ) {
-  private val extensions = config.extensionSpecs.map(
-      ExtensionSpec<I>::create)
+  private val extensions = config.extensionSpecs.map(ExtensionSpec<I>::create)
   private val adapter = Adapter(CreatorContext(this), config)
 
   inline fun <reified T : Any> extension() = extension(T::class.java)
@@ -169,9 +168,7 @@ class Recycler<I : Any> internal constructor(
    */
   fun update(block: Update<I>.() -> Unit) {
     val newUpdate = currentUpdate?.let {
-      Update(
-          it
-      )
+      Update(it)
     } ?: Update(adapter.currentRecyclerData)
     newUpdate.apply(block)
     // This tells which update is the last one, the one that will be applied in case of race.
@@ -343,7 +340,8 @@ class Recycler<I : Any> internal constructor(
           BinderRowSpec<I, S, V>(
               typeMatchBlock = { it is S },
               creatorBlock = creatorBlock
-          ).apply { specBlock() })
+          ).apply { specBlock() }
+      )
     }
 
     /**
@@ -440,7 +438,7 @@ class Recycler<I : Any> internal constructor(
           position,
           onDataItem = { dataItem ->
             val rowSpecIndex = config.rowSpecs.indexOfFirst { it.matches(dataItem) }
-            require (rowSpecIndex >= 0) {
+            require(rowSpecIndex >= 0) {
               "Data item type not found. Check row definitions. Item: $dataItem"
             }
             val subType = config.rowSpecs[rowSpecIndex].subType(position, dataItem)
@@ -448,15 +446,13 @@ class Recycler<I : Any> internal constructor(
           },
           onExtraItem = { extraItem ->
             val extraRowSpecIndex = config.extraItemSpecs.indexOfFirst { it.matches(extraItem) }
-            require (extraRowSpecIndex >= 0) {
+            require(extraRowSpecIndex >= 0) {
               "Extra item type not found. Check extra row definitions. Item: $extraItem"
             }
             -(1 + extraRowSpecIndex)
           },
           orElse = {
-            throw IllegalStateException(
-                "getItemViewType for invalid position ($position)"
-            )
+            throw IllegalStateException("getItemViewType for invalid position ($position)")
           }
       )
     }
@@ -468,13 +464,17 @@ class Recycler<I : Any> internal constructor(
      * The 8 least significant bits are the subType. The rest are the rowType.
      * `viewType [ ....... rowType (24) / subType (8) ]`.
      */
-    private fun makeViewType(rowType: Int, subType: Int) = rowType shl 8 or subType
+    private fun makeViewType(
+      rowType: Int,
+      subType: Int
+    ) = rowType shl 8 or subType
 
     /**
      * Extracts the rowType from the viewType the RecyclerView handles.
      * @see makeViewType
      */
     private fun Int.rowType() = this shr 8
+
     /**
      * Extracts the subType from the viewType the RecyclerView handles.
      * @see makeViewType
@@ -492,9 +492,7 @@ class Recycler<I : Any> internal constructor(
           onDataItem = { it },
           onExtraItem = { it },
           orElse = {
-            throw IllegalStateException(
-                "onBindViewHolder for invalid position ($position)"
-            )
+            throw IllegalStateException("onBindViewHolder for invalid position ($position)")
           }
       )
       holder.bind(position, dataItem)
@@ -556,9 +554,15 @@ class Recycler<I : Any> internal constructor(
      * other subtypes) this should return a different number. The default is 0 as that's only the case
      * for Mosaic-generated views.
      */
-    open fun subType(index: Int, any: I) = 0
+    open fun subType(
+      index: Int,
+      any: I
+    ) = 0
 
-    abstract fun createViewHolder(creatorContext: CreatorContext, subType: Int): ViewHolder<V>
+    abstract fun createViewHolder(
+      creatorContext: CreatorContext,
+      subType: Int
+    ): ViewHolder<V>
   }
 
   /** Each ViewHolder is created with its view and the bind block that knows how to bind to it. */
@@ -608,10 +612,11 @@ class Recycler<I : Any> internal constructor(
       noinline layoutProvider: ((Context) -> LayoutManager)? = null,
       crossinline block: Config<I>.() -> Unit
     ): Recycler<I> {
-      layoutProvider?.invoke(view.context).let { view.layoutManager = it }
+      layoutProvider?.invoke(view.context)
+          .let { view.layoutManager = it }
       requireNotNull(view.layoutManager) {
         "RecyclerView needs a layoutManager assigned. " +
-        "Assign one to the view, or pass a layoutProvider argument."
+            "Assign one to the view, or pass a layoutProvider argument."
       }
       return Config<I>()
           .apply(block)

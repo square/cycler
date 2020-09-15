@@ -37,8 +37,10 @@ class ItemView(
       // Use a background that doesn't depend on position if we are moving items around.
       background = GradientDrawable(
           TOP_BOTTOM,
-          intArrayOf(Color.rgb(240, 250, 255),
-              Color.WHITE)
+          intArrayOf(
+              Color.rgb(240, 250, 255),
+              Color.WHITE
+          )
       )
     }
     // TODO: Consider a layout.xml file https://github.com/square/cycler/issues/24
@@ -46,7 +48,10 @@ class ItemView(
     addView(amount, LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
   }
 
-  fun show(item: Item, isEven: Boolean) {
+  fun show(
+    item: Item,
+    isEven: Boolean
+  ) {
     name.text = item.name
     amount.text = item.amount.format()
     if (!showDragHandle) {
