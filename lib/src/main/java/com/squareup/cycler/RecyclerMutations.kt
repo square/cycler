@@ -1,5 +1,6 @@
 package com.squareup.cycler
 
+import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.view.MotionEvent
 import android.view.View
@@ -306,7 +307,8 @@ private class MutationExtension<T : Any>(val spec: MutationExtensionSpec<T>) : E
 
   override lateinit var data: RecyclerData<T>
 
-  internal fun setUpDragHandle(view: View) {
+  @SuppressLint("ClickableViewAccessibility")
+  fun setUpDragHandle(view: View) {
     view.setOnTouchListener { touchedView, event ->
       if (event.action == MotionEvent.ACTION_DOWN) {
         val viewHolder = recycler.view.findContainingViewHolder(touchedView)!!
