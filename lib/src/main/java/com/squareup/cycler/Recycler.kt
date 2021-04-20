@@ -261,7 +261,7 @@ class Recycler<I : Any> internal constructor(
 
     @PublishedApi internal val rowSpecs = mutableListOf<RowSpec<I, *, *>>()
     @PublishedApi internal val extraItemSpecs = mutableListOf<RowSpec<Any, *, *>>()
-    internal val extensionSpecs = mutableListOf<ExtensionSpec<I>>()
+    @PublishedApi internal val extensionSpecs = mutableListOf<ExtensionSpec<I>>()
 
     internal var hasStableIdProvider = false
     internal var stableIdProvider: StableIdProvider<I> = {
@@ -380,11 +380,25 @@ class Recycler<I : Any> internal constructor(
     }
 
     /**
-     * General method which is called from Extension code. DON'T USE DIRECTLY.
+     * General method which is called from extensions' code.
+     * Adds an [ExtensionSpec] to the [Config].
      * @hide
      */
     fun extension(spec: ExtensionSpec<I>) {
       extensionSpecs.add(spec)
+    }
+
+    /**
+     * General method which is called from extensions' code.
+     * Returns the [ExtensionSpec] of type [E]. If not present [block] will be
+     * used to create it and add it.
+     * @hide
+     */
+    inline fun <reified E : ExtensionSpec<I>> extension(block: () -> E): E {
+      return extensionSpecs
+          .filterIsInstance<E>()
+          .firstOrNull()
+          ?: block().also(extensionSpecs::add)
     }
 
     /**
