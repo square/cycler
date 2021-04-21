@@ -627,7 +627,7 @@ class Recycler<I : Any> internal constructor(
       crossinline block: Config<I>.() -> Unit
     ): Recycler<I> {
       layoutProvider?.invoke(view.context)
-          .let { view.layoutManager = it }
+          ?.let { view.layoutManager = it }
       requireNotNull(view.layoutManager) {
         "RecyclerView needs a layoutManager assigned. " +
             "Assign one to the view, or pass a layoutProvider argument."
