@@ -28,9 +28,9 @@ jobs:
       # Allow tests to continue on other devices if they fail on one device.
       fail-fast: false
       matrix:
+        # The sample-app is minSdk 24.
         api-level:
-          - 21
-          - 23
+          - 24
           - 26
           - 29
     steps:
