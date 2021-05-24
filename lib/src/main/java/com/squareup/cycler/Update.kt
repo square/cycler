@@ -40,6 +40,20 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
   ) { _, _, _ -> addedChunks.clear() }
   var extraItem: Any? = oldRecyclerData.extraItem
 
+  /**
+   * Enabled by default, which allows item diffing to find changes in relative position. It may
+   * be disabled for large data sets as an optimization if this functionality is not needed -
+   * time complexity goes from N^2 to N when it is disabled.
+   *
+   * ```
+   * recycler.update {
+   *   detectMoves = false // Don't try to find changes in relative position.
+   *   data = ...
+   * }
+   * ```
+   */
+  var detectMoves: Boolean = true
+
   private val addedChunks = mutableListOf<List<I>>()
   private val dataReplaced get() = oldRecyclerData.data != data
   private val dataAdded get() = !dataReplaced && addedChunks.isNotEmpty()
@@ -122,7 +136,7 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
     itemComparator: ItemComparator<I>
   ): (Adapter<*>) -> Unit {
     val callback = DataSourceDiff(itemComparator, oldRecyclerData.data, newData)
-    val diffResult = DiffUtil.calculateDiff(callback)
+    val diffResult = DiffUtil.calculateDiff(callback, detectMoves)
     return { adapter -> diffResult.dispatchUpdatesTo(adapter) }
   }
 
