@@ -1,26 +1,28 @@
 package com.squareup.cycler
 
 /**
- * Very minimal interface for the item list.
- * You can use extensions [Array.toDataSource] and [List.toDataSource].
+ * If you happened to have a custom implementation of [DataSource] you can
+ * subclass [AbstractList] which has the same abstract API surface.
+ *
+ * Ex:
+ * fun <T> Array<T>.toDataSource(): DataSource<T> {
+ *   return object : AbstractList<T>() {
+ *     override fun get(i: Int): T = this@toDataSource[i]
+ *     override val size get() = this@toDataSource.size
+ *   }
+ * }
  */
-interface DataSource<out T> {
-  operator fun get(i: Int): T
-  val size: Int
-  val isEmpty: Boolean
-    get() = size == 0
-}
+@Deprecated(message = "DataSource is now just an alias for List and will be removed in the future.")
+typealias DataSource<T> = List<T>
 
-fun <T> List<T>.toDataSource(): DataSource<T> {
-  return object : DataSource<T> {
-    override fun get(i: Int): T = this@toDataSource[i]
-    override val size get() = this@toDataSource.size
-  }
-}
+@Deprecated(
+  message = "Converting to DataSource is no longer necessary.",
+  replaceWith = ReplaceWith("this")
+)
+fun <T> List<T>.toDataSource(): DataSource<T> = this
 
-fun <T> Array<T>.toDataSource(): DataSource<T> {
-  return object : DataSource<T> {
-    override fun get(i: Int): T = this@toDataSource[i]
-    override val size get() = this@toDataSource.size
-  }
-}
+@Deprecated(
+  message = "Converting to DataSource is no longer necessary.",
+  replaceWith = ReplaceWith("toList()")
+)
+fun <T> Array<T>.toDataSource(): DataSource<T> = toList()
