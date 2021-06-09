@@ -214,25 +214,6 @@ represents your recycler view. It has three properties:
 - `data`: the list of items to show.
 - `extraItem`: the extra item to add to the end (or null).
 
-Notice that `data` is of type `DataSource<I>`.
-
-`DataSource` is a simplified `List` interface:
-
-```kotlin
-interface DataSource<out T> {
-  operator fun get(i: Int): T
-  val size: Int
-}
-```
-
-You can convert an `Array` or a `List` to a DataSource
-using the extension method `toDataSource()`:
-`arrayOf(1, 2, 3).toDataSource()`.
-
-The advantage over requiring a Kotlin `List` is that you
-can implement your arbitrary DataSource without having to
-implement the whole `List` interface, which is bigger.
-
 ## Extensions
 
 Extensions are a mechanism to add simple-to-configure features
