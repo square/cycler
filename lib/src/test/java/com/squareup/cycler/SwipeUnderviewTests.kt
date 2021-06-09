@@ -1,11 +1,9 @@
-package com.squareup.recycler
+package com.squareup.cycler
 
 import android.view.View
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.squareup.cycler.SwipeBindData
-import com.squareup.cycler.SwipeDirection
 import com.squareup.cycler.SwipeDirection.Companion.BOTH
 import com.squareup.cycler.SwipeDirection.Companion.BOTH_ABSOLUTE
 import com.squareup.cycler.SwipeDirection.END
