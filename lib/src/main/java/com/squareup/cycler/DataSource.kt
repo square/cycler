@@ -23,6 +23,6 @@ fun <T> List<T>.toDataSource(): List<T> = this
 
 @Deprecated(
   message = "Converting to DataSource is no longer necessary.",
-  replaceWith = ReplaceWith("toList()")
+  replaceWith = ReplaceWith("asList()")
 )
-fun <T> Array<T>.toDataSource(): List<T> = toList()
+fun <T> Array<T>.toDataSource(): List<T> = asList()
