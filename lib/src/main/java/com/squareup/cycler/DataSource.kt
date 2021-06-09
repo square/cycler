@@ -19,10 +19,10 @@ typealias DataSource<T> = List<T>
   message = "Converting to DataSource is no longer necessary.",
   replaceWith = ReplaceWith("this")
 )
-fun <T> List<T>.toDataSource(): DataSource<T> = this
+fun <T> List<T>.toDataSource(): List<T> = this
 
 @Deprecated(
   message = "Converting to DataSource is no longer necessary.",
   replaceWith = ReplaceWith("toList()")
 )
-fun <T> Array<T>.toDataSource(): DataSource<T> = toList()
+fun <T> Array<T>.toDataSource(): List<T> = toList()

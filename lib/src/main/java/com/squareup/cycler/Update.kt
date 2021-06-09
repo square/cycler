@@ -35,9 +35,7 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
   }
 
   // New values, initialized to the old ones.
-  var data by Delegates.observable<DataSource<I>>(
-      oldRecyclerData.data
-  ) { _, _, _ -> addedChunks.clear() }
+  var data by Delegates.observable(oldRecyclerData.data) { _, _, _ -> addedChunks.clear() }
   var extraItem: Any? = oldRecyclerData.extraItem
 
   /**
@@ -116,8 +114,8 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
           notifications += { adapter ->
             val positionAt = oldRecyclerData.data.size
             val count = addedChunks.asSequence()
-                .map(List<I>::size)
-                .sum()
+              .map(List<I>::size)
+              .sum()
             adapter.notifyItemRangeInserted(positionAt, count)
           }
         }
@@ -171,7 +169,7 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
    * As mutationMap just changes items in the already existing range.
    */
   private fun concatenateAddedChunks() = mutableListOf<I>().apply {
-    addAll((0 until data.size).asSequence().map(data::get))
+    addAll((data.indices).asSequence().map(data::get))
     addAll(addedChunks.asSequence().flatten())
-  }.toDataSource()
+  }
 }

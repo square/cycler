@@ -176,21 +176,24 @@ class MutationExtensionSpec<T : Any> : ExtensionSpec<T> {
 
 /**
  * Define the extension method to get the current position-changes from a [Recycler].
- * It returns the mutation-map respect to the originally set [DataSource].
+ *
+ * @return The [MutationMap] originally set on [MutableDataSource] or
+ *         a new one if we don't have one to copy.
  */
 fun <I : Any> Recycler<I>.getCurrentMutations(): MutationMap {
   return extension<MutationExtension<I>>()?.data?.copyMutationMap() ?: MutationMap()
 }
 
 /**
- * Define the extension method to get the [DataSource] including all the changes from a [Recycler].
- * It returns a copy of the DataSource so it's immutable (and developer can't change the internal one).
+ * Define the extension method to get the data [List] including all the changes from a [Recycler].
+ *
+ * @return A copy of the data so it's immutable (and developer can't change the internal one).
  */
-fun <I : Any> Recycler<I>.getMutatedData(): DataSource<I> {
+fun <I : Any> Recycler<I>.getMutatedData(): List<I> {
   return data.let { source ->
     mutableListOf<I>().apply {
-      addAll((0 until source.size).asSequence().map(source::get))
-    }.toDataSource()
+      addAll((source.indices).asSequence().map(source::get))
+    }
   }
 }
 
