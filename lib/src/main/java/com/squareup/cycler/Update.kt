@@ -53,7 +53,7 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
   var detectMoves: Boolean = true
 
   private val addedChunks = mutableListOf<List<I>>()
-  private val dataReplaced get() = oldRecyclerData.data != data
+  private val dataReplaced get() = oldRecyclerData.data !== data
   private val dataAdded get() = !dataReplaced && addedChunks.isNotEmpty()
   private val newData get() = data
 
