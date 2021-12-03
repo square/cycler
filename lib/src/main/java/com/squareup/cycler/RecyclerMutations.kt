@@ -73,6 +73,12 @@ class MutationExtensionSpec<T : Any> : ExtensionSpec<T> {
   var dragAndDropEnabled = false
 
   /**
+   * Determine whether items can be dragged left and right in the recycler view or not.
+   * If [dragAndDropEnabled] == false, this flag is ignored.
+   */
+  var leftRightDragAndDropEnabled = false
+
+  /**
    * Determine whether a drag can be started by long pressing an item.
    */
   var longPressDragEnabled = false
@@ -340,7 +346,7 @@ private class MutationExtension<T : Any>(val spec: MutationExtensionSpec<T>) : E
       val dragFlags = if (spec.dragAndDropEnabled && moreThanOne) {
         data.forPosition(
             viewHolder.adapterPosition,
-            onDataItem = { ItemTouchHelper.UP or ItemTouchHelper.DOWN },
+            onDataItem = dataItemDragFlags(),
             onExtraItem = { 0 },
             orElse = { 0 }
         )
@@ -443,6 +449,14 @@ private class MutationExtension<T : Any>(val spec: MutationExtensionSpec<T>) : E
         }
       }
       lastActionState = actionState
+    }
+
+    private fun dataItemDragFlags(): (T) -> Int {
+      return if (spec.leftRightDragAndDropEnabled) {
+        { ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT }
+      } else {
+        { ItemTouchHelper.UP or ItemTouchHelper.DOWN }
+      }
     }
 
     private fun removeSwipeState() {

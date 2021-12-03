@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class RecyclerActivity : AppCompatActivity(R.layout.main_activity), OnItemSelectedListener {
 
-  private val pages = arrayOf(SimplePage, MutationsPage())
+  private val pages = arrayOf(SimplePage, MutationsPage(), GridPage, GridMutationsPage())
 
   override fun onNothingSelected(parent: AdapterView<*>?) = Unit
 
