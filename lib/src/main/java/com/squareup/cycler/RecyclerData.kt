@@ -8,7 +8,7 @@ import com.squareup.cycler.Recycler.Config
  */
 class RecyclerData<I : Any>(
   @PublishedApi internal val config: Config<I>,
-  originalData: List<I>,
+  originalData: DataSource<I>,
   val extraItem: Any?
 ) {
   /**
@@ -45,7 +45,7 @@ class RecyclerData<I : Any>(
   fun copyMutationMap() = mutableData.copyMutationMap()
 
   private val mutableData = MutableDataSource(originalData)
-  val data: List<I> get() = mutableData
+  val data: DataSource<I> get() = mutableData
   val hasExtraItem get() = extraItem != null
   val extraItemIndex get() = data.size
   val totalCount get() = data.size + if (hasExtraItem) 1 else 0
@@ -77,6 +77,6 @@ class RecyclerData<I : Any>(
   companion object {
     @Suppress("EXPERIMENTAL_API_USAGE")
     fun <T : Any> empty(): RecyclerData<T> =
-      RecyclerData(Config(), emptyList(), null)
+      RecyclerData(Config(), emptyList<T>().toDataSource(), null)
   }
 }

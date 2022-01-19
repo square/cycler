@@ -1,28 +1,32 @@
 package com.squareup.cycler
 
 /**
- * If you happened to have a custom implementation of [DataSource] you can
- * subclass [AbstractList] which has the same abstract API surface.
+ * Very minimal interface for the item list.
+ * You can use extensions [Array.toDataSource] and [List.toDataSource].
  *
- * Ex:
- * fun <T> Array<T>.toDataSource(): DataSource<T> {
- *   return object : AbstractList<T>() {
- *     override fun get(i: Int): T = this@toDataSource[i]
- *     override val size get() = this@toDataSource.size
- *   }
- * }
+ * The [DataSource] is preferred over a bare list because it doesn't implement comparison-by-value
+ * and prevents an exhaustive (and potentially costly) full scan on comparison with other data
+ * sources. This does not happen in Cycler code (except for the proper diffing of the updated
+ * source) but it might be an issue for client code comparing these objects and/or container data
+ * classes.
  */
-@Deprecated(message = "DataSource is now just an alias for List and will be removed in the future.")
-typealias DataSource<T> = List<T>
+interface DataSource<out T> {
+  operator fun get(i: Int): T
+  val size: Int
+  val isEmpty: Boolean
+    get() = size == 0
+}
 
-@Deprecated(
-  message = "Converting to DataSource is no longer necessary.",
-  replaceWith = ReplaceWith("this")
-)
-fun <T> List<T>.toDataSource(): List<T> = this
+fun <T> List<T>.toDataSource(): DataSource<T> {
+  return object : DataSource<T> {
+    override fun get(i: Int): T = this@toDataSource[i]
+    override val size get() = this@toDataSource.size
+  }
+}
 
-@Deprecated(
-  message = "Converting to DataSource is no longer necessary.",
-  replaceWith = ReplaceWith("asList()")
-)
-fun <T> Array<T>.toDataSource(): List<T> = asList()
+fun <T> Array<T>.toDataSource(): DataSource<T> {
+  return object : DataSource<T> {
+    override fun get(i: Int): T = this@toDataSource[i]
+    override val size get() = this@toDataSource.size
+  }
+}

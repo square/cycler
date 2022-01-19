@@ -131,7 +131,7 @@ class Recycler<I : Any> internal constructor(
   }
 
   fun clear() = update {
-    data = listOf()
+    data = listOf<I>().toDataSource()
     extraItem = null
   }
 
@@ -139,7 +139,7 @@ class Recycler<I : Any> internal constructor(
    * Property to assign the concrete data for the recycler.
    * @deprecated Use [update].
    */
-  var data: List<I>
+  var data: DataSource<I>
     get() = adapter.currentRecyclerData.data
     set(value) {
       update { data = value }

@@ -5,8 +5,8 @@ import androidx.recyclerview.widget.DiffUtil
 /** Implements Android's DiffUtil.Callback (change comparison) based on an [ItemComparator]. */
 class DataSourceDiff<T>(
   private val helper: ItemComparator<T>,
-  private val oldList: List<T>,
-  private val newList: List<T>
+  private val oldList: DataSource<T>,
+  private val newList: DataSource<T>
 ) : DiffUtil.Callback() {
 
   override fun getOldListSize(): Int = oldList.size

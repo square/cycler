@@ -189,11 +189,11 @@ fun <I : Any> Recycler<I>.getCurrentMutations(): MutationMap {
  *
  * @return A copy of the data so it's immutable (and developer can't change the internal one).
  */
-fun <I : Any> Recycler<I>.getMutatedData(): List<I> {
+fun <I : Any> Recycler<I>.getMutatedData(): DataSource<I> {
   return data.let { source ->
     mutableListOf<I>().apply {
-      addAll((source.indices).asSequence().map(source::get))
-    }
+      addAll((0 until source.size).asSequence().map(source::get))
+    }.toDataSource()
   }
 }
 

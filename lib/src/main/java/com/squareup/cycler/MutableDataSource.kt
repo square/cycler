@@ -6,8 +6,8 @@ package com.squareup.cycler
  * be used externally.
  */
 internal class MutableDataSource<T>(
-  private val originalDataSource: List<T>
-) : AbstractList<T>() {
+  private val originalDataSource: DataSource<T>
+) : DataSource<T> {
   private val mutationMap = MutationMap(originalDataSource.size)
   override fun get(index: Int) = originalDataSource[mutationMap[index]]
   override val size get() = mutationMap.size
