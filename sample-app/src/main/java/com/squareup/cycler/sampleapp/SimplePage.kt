@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.cycler.Recycler
 import com.squareup.cycler.sampleapp.BaseItem.Discount
 import com.squareup.cycler.sampleapp.BaseItem.Item
+import com.squareup.cycler.toDataSource
 
 object SimplePage : Page {
 
@@ -95,7 +96,7 @@ object SimplePage : Page {
         .coerceAtLeast(0f)
 
     cycler.update {
-      data = this@SimplePage.data
+      data = this@SimplePage.data.toDataSource()
       extraItem = if (showTotal) GrandTotal(total) else null
     }
   }

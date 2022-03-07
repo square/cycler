@@ -6,6 +6,7 @@ import com.squareup.cycler.Recycler
 import com.squareup.cycler.dragHandle
 import com.squareup.cycler.enableMutations
 import com.squareup.cycler.sampleapp.BaseItem.Item
+import com.squareup.cycler.toDataSource
 
 class MutationsPage : Page {
 
@@ -53,10 +54,10 @@ class MutationsPage : Page {
   }
 
   private fun update() {
-    cycler.data = sampleData()
+    cycler.data = sampleData().toDataSource()
   }
 
   private fun sampleData() = (1..20).map {
     Item(it, "Product #$it", (it * 13.73).rem(100).toFloat(), 1)
-  }
+  }.toList()
 }

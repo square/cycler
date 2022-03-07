@@ -35,7 +35,9 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
   }
 
   // New values, initialized to the old ones.
-  var data by Delegates.observable(oldRecyclerData.data) { _, _, _ -> addedChunks.clear() }
+  var data by Delegates.observable<DataSource<I>>(
+    oldRecyclerData.data
+  ) { _, _, _ -> addedChunks.clear() }
   var extraItem: Any? = oldRecyclerData.extraItem
 
   /**
@@ -53,7 +55,7 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
   var detectMoves: Boolean = true
 
   private val addedChunks = mutableListOf<List<I>>()
-  private val dataReplaced get() = oldRecyclerData.data !== data
+  private val dataReplaced get() = oldRecyclerData.data != data
   private val dataAdded get() = !dataReplaced && addedChunks.isNotEmpty()
   private val newData get() = data
 
@@ -169,7 +171,7 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
    * As mutationMap just changes items in the already existing range.
    */
   private fun concatenateAddedChunks() = mutableListOf<I>().apply {
-    addAll((data.indices).asSequence().map(data::get))
+    addAll((0 until data.size).asSequence().map(data::get))
     addAll(addedChunks.asSequence().flatten())
-  }
+  }.toDataSource()
 }
