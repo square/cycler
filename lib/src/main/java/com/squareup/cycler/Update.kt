@@ -1,11 +1,11 @@
 package com.squareup.cycler
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DiffUtil.DiffResult
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.squareup.cycler.Recycler.Config
-import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
-import kotlinx.coroutines.withContext
 
 /**
  * Holds the info for a call to [update]. This object is mutable to allow the caller to change it
@@ -85,17 +85,32 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
     onCancelled = block
   }
 
-  internal suspend fun generateDataChangesLambdas(
-    itemComparator: ItemComparator<I>?,
-    backgroundContext: CoroutineContext
-  ): List<(Adapter<*>) -> Unit> {
+  /**
+   * Result object for [generateUpdateWork]. It contains:
+   * @param asyncWork List of lambdas to be executed asynchronously (can be empty).
+   * @param notifications List of lambdas receiving the adapter that will notify of the changes.
+   */
+  internal class UpdateWork(
+    val asyncWork: List<() -> Unit>,
+    val notifications: List<(Adapter<*>) -> Unit>
+  )
+  /**
+   * Calculates the work needed to apply this update. It will return a
+   * `Pair<List<lambda>, List<lambda>>` where the first list is the work that needs to be done
+   * asynchronously and the second list is to apply calculated notifications to the recycler adapter
+   * on the main thread. This allows the caller (see [Recycler.update]) to decide if it needs to
+   * go async (and missing a couple of frames) or it can be applied at once.
+   */
+  internal fun generateUpdateWork(itemComparator: ItemComparator<I>?): UpdateWork {
 
     val extraItemChanged = oldRecyclerData.extraItem != extraItem
     val refreshAllNeeded = dataReplaced && itemComparator == null
 
+    val asyncWork = mutableListOf<() -> Unit>()
     val notifications = mutableListOf<(Adapter<*>) -> Unit>()
 
     if (refreshAllNeeded) {
+      @SuppressLint("NotifyDataSetChanged")
       notifications += { adapter -> adapter.notifyDataSetChanged() }
     } else {
 
@@ -106,11 +121,12 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
 
       when {
         dataReplaced -> {
-          // refreshAllNeeded == false => itemComparator != null.
-          // We are going async. After it we add the resulting notification.
-          notifications += withContext(backgroundContext) {
-            calculateDataChanges(itemComparator!!)
+          // refreshAllNeeded == false => itemComparator != null. We are going async.
+          lateinit var diffResult: DiffResult
+          asyncWork += {
+            diffResult = calculateDataChanges(itemComparator!!)
           }
+          notifications += { adapter -> diffResult.dispatchUpdatesTo(adapter) }
         }
         dataAdded -> {
           notifications += { adapter ->
@@ -124,22 +140,24 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
       }
     }
 
-    return notifications
+    return UpdateWork(asyncWork, notifications)
   }
 
   /**
    * Calculates the changes that need to be notified to a RecyclerView to change from the oldData
-   * to the newData. It's better to execute this on a separate thread. For that reason this returns
-   * a lambda that will apply the calculated changes once returned to UI thread.
+   * to the newData. It's better to execute this on a separate thread.
+   * @return A [DiffResult] to be applied on "notification" time (see [UpdateWork.notifications]).
    */
   private fun calculateDataChanges(
     itemComparator: ItemComparator<I>
-  ): (Adapter<*>) -> Unit {
+  ): DiffResult {
     val callback = DataSourceDiff(itemComparator, oldRecyclerData.data, newData)
-    val diffResult = DiffUtil.calculateDiff(callback, detectMoves)
-    return { adapter -> diffResult.dispatchUpdatesTo(adapter) }
+    return DiffUtil.calculateDiff(callback, detectMoves)
   }
 
+  /**
+   * @return A lambda that will update the adapter according to the change in the extra item.
+   */
   private fun notifyChangesExtraItem(): (Adapter<*>) -> Unit = { adapter ->
     val hadExtraItem = oldRecyclerData.hasExtraItem
     val hasExtraItem = extraItem != null

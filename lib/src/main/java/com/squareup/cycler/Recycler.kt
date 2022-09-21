@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 typealias StableIdProvider<I> = (I) -> Long
 typealias ContentComparator<I> = (I, I) -> Boolean
@@ -173,32 +174,48 @@ class Recycler<I : Any> internal constructor(
     newUpdate.apply(block)
     // This tells which update is the last one, the one that will be applied in case of race.
     currentUpdate = newUpdate
-    mainScope.launch {
-      // This might not suspend if there's no item comparator and a general refresh is done.
-      // That's why we pass the backgroundContext for [generateDataChangesLambdas] to decide.
-      val notifications = newUpdate.generateDataChangesLambdas(
-          adapter.itemComparator,
-          backgroundContext
-      )
-      // If the change is still valid (no other call wants to update it).
-      if (currentUpdate == newUpdate) {
-        // Update the adapter and extensions' data.
-        val newRecyclerData = newUpdate.createNewRecyclerData(config)
-        adapter.currentRecyclerData = newRecyclerData
-        extensions.forEach { it.data = newRecyclerData }
-        // Tell adapter its data changed.
-        notifications.forEach { it(adapter) }
-        if (view.adapter == null) {
-          // Only sets view's adapter when first data is ready. Otherwise,
-          // a bogus empty adapter set for some frames will consume saved state (scroll position).
-          view.adapter = adapter
+    val updateWork = newUpdate.generateUpdateWork(adapter.itemComparator)
+    if (updateWork.asyncWork.isEmpty()) {
+      // If there's no async work we don't need to run on the UI thread and lose UI frames.
+      applyNotifications(updateWork.notifications, newUpdate)
+    } else {
+      // If there is async work, we run on the UI coroutine so we can wait for the async work.
+      mainScope.launch {
+        withContext(backgroundContext) {
+          updateWork.asyncWork.forEach { it.invoke() }
         }
-        currentUpdate = null
-        newUpdate.onReady.invoke()
-      } else {
-        newUpdate.onCancelled.invoke()
+        // If the change is still valid (no other call wants to update it).
+        if (currentUpdate == newUpdate) {
+          applyNotifications(updateWork.notifications, newUpdate)
+        } else {
+          newUpdate.onCancelled.invoke()
+        }
       }
     }
+  }
+
+  /**
+   * Apply [calculated notifications][Update.UpdateWork.notifications] to the recycler view adapter.
+   * It also sets the new recycler view data as current and calls back the [Update.onReady]. It's
+   * used in both cases: async update and synchronous update.
+   */
+  private fun applyNotifications(
+    syncWork: List<(Adapter<*>) -> Unit>,
+    newUpdate: Update<I>
+  ) {
+    // Update the adapter and extensions' data.
+    val newRecyclerData = newUpdate.createNewRecyclerData(config)
+    adapter.currentRecyclerData = newRecyclerData
+    extensions.forEach { it.data = newRecyclerData }
+    // Tell adapter its data changed.
+    syncWork.forEach { it(adapter) }
+    if (view.adapter == null) {
+      // Only sets view's adapter when first data is ready. Otherwise,
+      // a bogus empty adapter set for some frames will consume saved state (scroll position).
+      view.adapter = adapter
+    }
+    currentUpdate = null
+    newUpdate.onReady.invoke()
   }
 
   /**
