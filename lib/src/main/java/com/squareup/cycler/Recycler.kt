@@ -175,7 +175,7 @@ class Recycler<I : Any> internal constructor(
     // This tells which update is the last one, the one that will be applied in case of race.
     currentUpdate = newUpdate
     val updateWork = newUpdate.generateUpdateWork(adapter.itemComparator)
-    if (updateWork.asyncWork.isEmpty()) {
+    if (updateWork.isSynchronous()) {
       // If there's no async work we don't need to run on the UI thread and lose UI frames.
       applyNotifications(updateWork.notifications, newUpdate)
     } else {
