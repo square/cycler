@@ -34,6 +34,18 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
     oldRecyclerData.frozen = true
   }
 
+  /**
+   * If true a call to [Recycler.update] might update the recycler view (send adapter notifications)
+   * in the same call without posting / using coroutines. This happens if the update is trivial
+   * (no list diffing necessary).
+   *
+   * Disabled by default as, depending on the usage, calls to update might happen when the recycler
+   * view is scrolling or laying out and recycler view throws an exception (and this library cannot
+   * find out). Its use however is encouraged provided no calls to update are triggered inside
+   * an onScrollChanged or a relayout pending (when showing/hiding a keyboard for instance).
+   */
+  var allowSynchronousUpdate: Boolean = false
+
   // New values, initialized to the old ones.
   var data by Delegates.observable<DataSource<I>>(
     oldRecyclerData.data
@@ -91,9 +103,13 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
    * @param notifications List of lambdas receiving the adapter that will notify of the changes.
    */
   internal class UpdateWork(
+    private val allowSynchronousUpdate: Boolean,
     val asyncWork: List<() -> Unit>,
     val notifications: List<(Adapter<*>) -> Unit>
-  )
+  ) {
+    fun isSynchronous(): Boolean = allowSynchronousUpdate && asyncWork.isEmpty()
+  }
+
   /**
    * Calculates the work needed to apply this update. It will return a
    * `Pair<List<lambda>, List<lambda>>` where the first list is the work that needs to be done
@@ -140,7 +156,11 @@ class Update<I : Any>(private val oldRecyclerData: RecyclerData<I>) {
       }
     }
 
-    return UpdateWork(asyncWork, notifications)
+    return UpdateWork(
+        allowSynchronousUpdate = allowSynchronousUpdate,
+        asyncWork = asyncWork,
+        notifications = notifications
+    )
   }
 
   /**
