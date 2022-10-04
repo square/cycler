@@ -27,6 +27,6 @@ dependencies {
 mavenPublishAs(
     groupId: 'com.squareup.cycler',
     artifactId: 'cycler',
-    version: '0.1.12',
-    isSnapshot: false
+    version: '0.1.13',
+    isSnapshot: true
 )
