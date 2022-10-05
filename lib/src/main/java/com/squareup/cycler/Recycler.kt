@@ -181,8 +181,13 @@ class Recycler<I : Any> internal constructor(
     } else {
       // If there is async work, we run on the UI coroutine so we can wait for the async work.
       mainScope.launch {
-        withContext(backgroundContext) {
-          updateWork.asyncWork.forEach { it.invoke() }
+        // Don't jump to the async context if we don't need to.
+        // This mimics original behavior of mainScope.launch { /* no async */ notifications } when
+        // there's no async diffing.
+        if (updateWork.asyncWork.isNotEmpty()) {
+          withContext(backgroundContext) {
+            updateWork.asyncWork.forEach { it.invoke() }
+          }
         }
         // If the change is still valid (no other call wants to update it).
         if (currentUpdate == newUpdate) {
