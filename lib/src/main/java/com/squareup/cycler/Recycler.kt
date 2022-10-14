@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.squareup.cycler.Recycler.Config
+import com.squareup.cycler.Update.UpdateType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -175,23 +176,24 @@ class Recycler<I : Any> internal constructor(
     // This tells which update is the last one, the one that will be applied in case of race.
     currentUpdate = newUpdate
     val updateWork = newUpdate.generateUpdateWork(adapter.itemComparator)
-    if (updateWork.isSynchronous()) {
-      // If there's no async work we don't need to run on the UI thread and lose UI frames.
-      applyNotifications(updateWork.notifications, newUpdate)
+    if (updateWork.isSynchronous) {
+      // We want to execute our work and notifications synchronously, stay on the UI thread for this
+      updateWork.work.forEach { it.invoke() }
+      applyNotifications(updateWork.notifications, newUpdate, updateWork.updateType)
     } else {
       // If there is async work, we run on the UI coroutine so we can wait for the async work.
       mainScope.launch {
         // Don't jump to the async context if we don't need to.
         // This mimics original behavior of mainScope.launch { /* no async */ notifications } when
         // there's no async diffing.
-        if (updateWork.asyncWork.isNotEmpty()) {
+        if (updateWork.work.isNotEmpty()) {
           withContext(backgroundContext) {
-            updateWork.asyncWork.forEach { it.invoke() }
+            updateWork.work.forEach { it.invoke() }
           }
         }
         // If the change is still valid (no other call wants to update it).
         if (currentUpdate == newUpdate) {
-          applyNotifications(updateWork.notifications, newUpdate)
+          applyNotifications(updateWork.notifications, newUpdate, updateWork.updateType)
         } else {
           newUpdate.onCancelled.invoke()
         }
@@ -206,10 +208,11 @@ class Recycler<I : Any> internal constructor(
    */
   private fun applyNotifications(
     syncWork: List<(Adapter<*>) -> Unit>,
-    newUpdate: Update<I>
+    newUpdate: Update<I>,
+    updateType: UpdateType
   ) {
     // Update the adapter and extensions' data.
-    val newRecyclerData = newUpdate.createNewRecyclerData(config)
+    val newRecyclerData = newUpdate.createNewRecyclerData(config, updateType)
     adapter.currentRecyclerData = newRecyclerData
     extensions.forEach { it.data = newRecyclerData }
     // Tell adapter its data changed.
