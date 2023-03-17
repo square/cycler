@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.squareup.cycler.Recycler.Config
 import com.squareup.cycler.Update.UpdateType
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 typealias StableIdProvider<I> = (I) -> Long
 typealias ContentComparator<I> = (I, I) -> Boolean
@@ -100,8 +100,8 @@ annotation class RecyclerApiMarker
  * That diffing will happen in background keeping the UI thread light. That means that when you
  * set the [data] property the items shown might still be from the previous list.
  *
- * In the unlikely case you want to provide a different CoroutineDispatcher to process the diffing
- * you can set it through the [Config.backgroundDispatcher] property.
+ * In the unlikely case you want to provide a different [CoroutineContext] to process the diffing
+ * you can set it through the [Config.backgroundContext] property.
  */
 class Recycler<I : Any> internal constructor(
   val view: RecyclerView,
@@ -161,8 +161,8 @@ class Recycler<I : Any> internal constructor(
   private var currentUpdate: Update<I>? = null
 
   // This scope will automatically get its own job.
-  private val mainScope = CoroutineScope(config.mainDispatcher)
-  private val backgroundContext = mainScope.coroutineContext + config.backgroundDispatcher
+  private val mainScope = CoroutineScope(config.mainContext)
+  private val backgroundContext = mainScope.coroutineContext + config.backgroundContext
 
   /**
    * Use this method to update the [RecyclerData] (data+extraItem) at once.
@@ -295,15 +295,14 @@ class Recycler<I : Any> internal constructor(
     internal var contentComparator: ContentComparator<I>? = null
 
     /**
-     * Must be set to the [CoroutineDispatcher] to use for the main thread.
+     * Must be set to the [CoroutineContext] to use for the main thread.
      */
-    var mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    var mainContext: CoroutineContext = Dispatchers.Main
 
     /**
-     * You can set a different [CoroutineDispatcher] to handle the data diffing.
-     * TODO: not ideal, not sure if creating an executor on demand or what...
+     * You can set a different [CoroutineContext] to handle the data diffing.
      */
-    var backgroundDispatcher: CoroutineDispatcher = Dispatchers.IO
+    var backgroundContext: CoroutineContext = Dispatchers.IO
 
     /**
      * This will help "diff" the items and make only needed updates if you refresh the list.
