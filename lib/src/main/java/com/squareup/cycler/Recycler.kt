@@ -100,7 +100,7 @@ annotation class RecyclerApiMarker
  * That diffing will happen in background keeping the UI thread light. That means that when you
  * set the [data] property the items shown might still be from the previous list.
  *
- * In the unlikely case you want to provide a different CoroutineDispatcher to process the diffing
+ * In the unlikely case you want to provide a different [CoroutineContext] to process the diffing
  * you can set it through the [Config.backgroundContext] property.
  */
 class Recycler<I : Any> internal constructor(
